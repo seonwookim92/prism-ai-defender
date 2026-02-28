@@ -1,7 +1,7 @@
 # Prism AI Defender 🛡️
 
-Prism AI Defender는 **보안 관제 및 위기 대응을 위한 AI 에이전트 플랫폼**입니다. 
-Wazuh, CrowdStrike Falcon, Velociraptor와 같은 강력한 보안 도구들을 **Model Context Protocol (MCP)**로 통합하여, 복합적인 보안 쿼리 없이 **일상 언어(Natural Language)**만으로 인프라 전반의 위협을 식별하고 대응할 수 있는 지능형 관제 환경을 제공합니다.
+Prism AI Defender는 보안 관제 및 위기 대응을 위한 AI 에이전트 플랫폼입니다. 
+Wazuh, CrowdStrike Falcon, Velociraptor와 같은 강력한 보안 도구들을 Model Context Protocol (MCP)로 통합하여, 복합적인 보안 쿼리 없이 일상 언어(Natural Language)만으로 인프라 전반의 위협을 식별하고 대응할 수 있는 지능형 관제 환경을 제공합니다.
 
 기초적인 특정 OS 환경을 넘어, SSH가 가능한 모든 자산에 유연하게 대응하며 보안 운영자의 의사결정을 실시간으로 지원합니다.
 
