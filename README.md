@@ -7,16 +7,51 @@ Wazuh, CrowdStrike Falcon, Velociraptor와 같은 강력한 보안 도구들을 
 
 ---
 
-## 🚀 시작하기 전 확인 사항 (Prerequisites)
+## 🚀 시작하기 (Quick Start)
 
-시스템을 원활하게 사용하기 위해 다음 사항들이 준비되어야 합니다:
+### 1. 프로젝트 클론
+```bash
+git clone https://github.com/seonwookim92/prism-ai-defender.git
+cd prism-ai-defender
+```
+
+### 2. 환경 설정 파일 준비 ⚠️ (중요)
+`.env`, `assets.json` 파일은 보안 및 설정의 편의를 위해 기본적으로 `.gitignore`에 포함되어 있습니다. 
+**샘플 파일을 복사하여 실제 파일을 생성하지 않고 바로 실행하면 Docker가 파일 대신 디렉토리를 생성하여 오류가 발생할 수 있습니다.**
+
+```bash
+# 1. 환경 변수 설정
+cp .env.sample .env
+# .env 파일을 열어 API Key 및 각종 설정을 입력하세요. (필수)
+
+# 2. 자산 정보 설정
+cp assets.json.sample assets.json
+```
+
+### 3. Docker 실행
+```bash
+docker-compose up --build
+```
+
+---
+
+## 🛠️ 트러블슈팅: "not a directory" 에러 발생 시
+만약 `docker-compose up` 중에 `Are you trying to mount a directory onto a file?` 혹은 `not a directory` 에러가 발생한다면, 이미 Docker가 호스트에 파일이 없는 상태에서 동일한 이름의 **디렉토리**를 생성해 버린 것입니다.
+
+**해결 방법:**
+1. `docker-compose down` 명령으로 컨테이너를 중지합니다.
+2. `rm -rf assets.json` 명령으로 호스트에 잘못 생성된 디렉토리를 삭제합니다.
+3. 위의 **단계 2**를 수행하여 파일을 정상적으로 생성한 뒤 다시 실행하세요.
+
+---
+
+## 🏗️ 시스템 요구사항 (Prerequisites)
 
 1.  **네트워크 연결 (VPN)**:
-    - 등록할 자산(서버 등)들에 접근하려면 실행 중인 PC 혹은 컨테이너가 해당 서버들과 네트워크 통신이 가능해야 합니다. 필요시 **WireGuard VPN** 등을 사용하세요.
-2.  **Docker & Docker Compose**: 시스템은 컨테이너 기반으로 동작하여 간편한 설치와 실행을 지원합니다.
+    - 등록할 자산(서버 등)들에 접근하려면 네트워크 통신이 가능해야 합니다. 필요시 **WireGuard VPN** 등을 사용하세요.
+2.  **Docker & Docker Compose**: 시스템은 컨테이너 기반으로 동작합니다.
 3.  **LLM API 키**:
-    - OpenAI, Anthropic, Google Gemini 중 최소 하나의 API 키가 필요합니다.
-    - 로컬 LLM을 선호한다면 Ollama 엔드포인트를 사용할 수 있습니다.
+    - OpenAI, Anthropic, Google Gemini 중 최소 하나의 API 키가 설정되어야 합니다. 로컬 LLM(Ollama)도 사용 가능합니다.
 
 ---
 
