@@ -1,0 +1,129 @@
+services:
+  ui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: prism-ui
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      - BACKEND_URL=http://server:8000
+      - NEXT_PUBLIC_BACKEND_URL=http://localhost:8001
+      - WATCHPACK_POLLING=true
+      - NEXT_TELEMETRY_DISABLED=1
+      - NODE_ENV=development
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    command: npm run dev
+    restart: always
+
+  server:
+    build:
+      context: ./server
+    image: prism-server
+    ports:
+      - "8001:8000"
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://prism:prism_pass@db:5432/prism_db
+      - REDIS_URL=redis://redis:6379/0
+    volumes:
+      - ./server:/app
+      - ./assets.json:/app/assets.json
+      - ./tools.json:/app/tools.json
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    depends_on:
+      - db
+      - redis
+    restart: always
+
+  worker:
+    build:
+      context: ./server
+    image: prism-worker
+    command: python worker.py
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://prism:prism_pass@db:5432/prism_db
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+    restart: always
+
+  mcp-wazuh:
+    build:
+      context: ./mcp/Wazuh-MCP-Server
+    image: prism-mcp-wazuh
+    ports:
+      - "9010:3000"
+    environment:
+      - WAZUH_HOST=http://${WAZUH_API_HOST}
+      - WAZUH_USER=${WAZUH_API_USERNAME}
+      - WAZUH_PASS=${WAZUH_API_PASSWORD}
+      - WAZUH_PORT=${WAZUH_API_PORT}
+      - WAZUH_INDEXER_HOST=${WAZUH_INDEXER_HOST}
+      - WAZUH_INDEXER_PORT=${WAZUH_INDEXER_PORT}
+      - WAZUH_INDEXER_USER=${WAZUH_INDEXER_USERNAME}
+      - WAZUH_INDEXER_PASS=${WAZUH_INDEXER_PASSWORD}
+      - WAZUH_VERIFY_SSL=${WAZUH_VERIFY_SSL}
+      - AUTH_MODE=none
+    restart: always
+
+  mcp-falcon:
+    build:
+      context: ./mcp/falcon-mcp
+    image: prism-mcp-falcon
+    ports:
+      - "9011:9000"
+    environment:
+      - FALCON_CLIENT_ID=${FALCON_CLIENT_ID}
+      - FALCON_CLIENT_SECRET=${FALCON_CLIENT_SECRET}
+      - FALCON_BASE_URL=${FALCON_BASE_URL:-https://api.crowdstrike.com}
+      - FALCON_MCP_MODULES=${FALCON_MCP_MODULES:-detections,incidents,intel,hosts,spotlight}
+      - FALCON_MCP_TRANSPORT=streamable-http
+      - FALCON_MCP_HOST=0.0.0.0
+      - FALCON_MCP_PORT=9000
+      - MCP_USE_ANONYMIZED_TELEMETRY=false
+    restart: always
+
+  mcp-velociraptor:
+    build:
+      context: ./mcp/mcp-velociraptor
+    image: prism-mcp-velociraptor
+    ports:
+      - "9012:8000"
+    environment:
+      - VELOCIRAPTOR_API_CONFIG=/config/api_client.yaml
+      - FASTMCP_HOST=0.0.0.0
+      - FASTMCP_PORT=8000
+    volumes:
+      - ${VELOCIRAPTOR_CONFIG_DIR:-./velociraptor-config}:/config:ro
+    restart: always
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=prism
+      - POSTGRES_PASSWORD=prism_pass
+      - POSTGRES_DB=prism_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: always
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    restart: always
+
+volumes:
+  postgres_data:

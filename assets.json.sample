@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Target-Linux-Server",
+    "ip": "192.168.1.10",
+    "port": 22,
+    "user": "admin",
+    "pass": "password123",
+    "os": "linux",
+    "category": "defense",
+    "sector": "DMZ"
+  },
+  {
+    "name": "Security-Wazuh-Manager",
+    "ip": "192.168.1.20",
+    "port": 22,
+    "user": "root",
+    "pass": "topsecret",
+    "os": "linux",
+    "category": "security",
+    "sector": ""
+  },
+  {
+    "name": "Defense-Internal-VM",
+    "ip": "192.168.1.30",
+    "port": 22,
+    "user": "developer",
+    "pass": "devpass",
+    "os": "linux",
+    "category": "defense",
+    "sector": "BEG"
+  }
+]

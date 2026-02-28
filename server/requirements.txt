@@ -1,0 +1,16 @@
+fastapi[all]
+uvicorn
+sqlalchemy
+psycopg2-binary
+pydantic
+pydantic-settings
+openai
+python-dotenv
+httpx
+redis
+rq
+asyncpg
+anthropic
+google-generativeai
+paramiko
+python-multipart
