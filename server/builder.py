@@ -382,19 +382,18 @@ When generating execute_host_command calls, always match the command to the targ
     GUIDANCE:
     - Respond in KOREAN (한국어).
     - **핵심 정보만 간결하게 답변하십시오.** 불필요한 설명을 생략하고 전문가답게 결론부터 말씀하십시오.
-    - 질문이나 명령에 대해 MCP 도구 호출이 필요하면 즉시 JSON 형식으로 호출하십시오.
-    - **Self-Correction (CRITICAL)**: 도구 호출이 실패(Validation Error, Syntax Error 등)한 경우, 에러 메시지를 정밀하게 분석하여 **즉시 수정된 파라미터로 다시 호출(Tool Call)하십시오.** 단순히 실패했다고 보고하고 멈추는 것은 금지됩니다. (최대 3회까지 재시도 권장)
-    - **Type Integrity**: 도구의 인자 값으로 리스트(배열, `[]`)를 사용할 때는 스키마에 `type: array`라고 명시된 경우에만 사용하십시오. `type: string`인 필드에 리스트를 전달하지 않도록 각별히 주의하십시오 (예: `sort` 파라미터는 반드시 문자열이어야 함).
-    - **Thought Process**: Start your response with `[THOUGHT]` ... `[/THOUGHT]`.
-    - **File Analysis**: 사용자가 `[FILE_UPLOAD: <filename>]` 형식으로 데이터나 로그 파일을 제공하면, 해당 파일의 내용을 정밀하게 분석하여 보안 관련 통찰을 제공하십시오.
-    - If the user asks to run a command on an SSH asset, respond with:
+    - 질문이나 명령에 대해 MCP 도구 호출이 필요하면 **다른 텍스트 없이 아래 JSON 형식으로만** 호출하십시오. (생각 과정은 반드시 [THOUGHT] 태그 내에만 작성)
+    - **도구 호출 형식 (JSON)**:
     ```json
-    {{
-      "response": "명령 실행 설명",
-      "tool": "execute_host_command",
-      "args": {{"target": "<ip_or_name>", "command": "<command>"}}
-    }}
+    {
+      "response": "이 도구를 호출하는 이유 설명",
+      "tool": "호출할_도구_이름",
+      "args": { "인자명": "값" }
+    }
     ```
+    - **Self-Correction (CRITICAL)**: 도구 호출이 실패(Validation Error, Syntax Error 등)한 경우, 에러 메시지를 정밀하게 분석하여 **즉시 수정된 파라미터로 다시 호출(Tool Call)하십시오.** 단순히 실패했다고 보고하고 멈추는 것은 금지됩니다. (최대 3회까지 재시도 권장)
+    - **Type Integrity**: 도구의 인자 값으로 리스트(배열, `[]`)를 사용할 때는 스키마에 `type: array`라고 명시된 경우에만 사용하십시오. `type: string`인 필드에 리스트를 전달하지 않도록 각별히 주의하십시오.
+    - **Thought Process**: 응답의 시작 부분에 `[THOUGHT]` ... `[/THOUGHT]`를 사용하여 당신의 추론 과정을 한글로 작성하십시오. 그 다음 줄에 도구 호출 JSON 또는 최종 답변을 작성하십시오.
 """
 
     print(f"Agentic Reasoning starting: provider={active_provider}, model={active_model}, mode={mode}")
@@ -530,8 +529,8 @@ When generating execute_host_command calls, always match the command to the targ
                 try: data = json.loads(top_json_str)
                 except: pass
 
-            tool_name = data.get("tool") or data.get("tool_name")
-            tool_args  = data.get("args") or {}
+            tool_name = data.get("tool") or data.get("tool_name") or data.get("name")
+            tool_args  = data.get("args") or data.get("arguments") or {}
 
             # For audit_verify: emit [SYSTEM] status for tool calls, or yield final analysis as-is
             if mode == "audit_verify":
