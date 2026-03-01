@@ -47,6 +47,10 @@ yarn-error.log*
 /keystore/*
 !/keystore/.gitkeep
 
+# velociraptor config (contains private keys and certificates)
+/velociraptor-config/*
+!/velociraptor-config/.gitkeep
+
 # vercel
 .vercel
 
