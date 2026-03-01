@@ -385,11 +385,11 @@ When generating execute_host_command calls, always match the command to the targ
     - 질문이나 명령에 대해 MCP 도구 호출이 필요하면 **다른 텍스트 없이 아래 JSON 형식으로만** 호출하십시오. (생각 과정은 반드시 [THOUGHT] 태그 내에만 작성)
     - **도구 호출 형식 (JSON)**:
     ```json
-    {
+    {{
       "response": "이 도구를 호출하는 이유 설명",
       "tool": "호출할_도구_이름",
-      "args": { "인자명": "값" }
-    }
+      "args": {{ "인자명": "값" }}
+    }}
     ```
     - **Self-Correction (CRITICAL)**: 도구 호출이 실패(Validation Error, Syntax Error 등)한 경우, 에러 메시지를 정밀하게 분석하여 **즉시 수정된 파라미터로 다시 호출(Tool Call)하십시오.** 단순히 실패했다고 보고하고 멈추는 것은 금지됩니다. (최대 3회까지 재시도 권장)
     - **Type Integrity**: 도구의 인자 값으로 리스트(배열, `[]`)를 사용할 때는 스키마에 `type: array`라고 명시된 경우에만 사용하십시오. `type: string`인 필드에 리스트를 전달하지 않도록 각별히 주의하십시오.

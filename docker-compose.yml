@@ -99,7 +99,7 @@ services:
     ports:
       - "9012:8000"
     environment:
-      - VELOCIRAPTOR_API_CONFIG=/config/api_client.yaml
+      - VELOCIRAPTOR_API_CONFIG=/config/api.client.yaml
       - FASTMCP_HOST=0.0.0.0
       - FASTMCP_PORT=8000
     volumes:

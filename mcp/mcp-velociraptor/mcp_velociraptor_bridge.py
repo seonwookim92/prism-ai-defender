@@ -6,16 +6,20 @@ from velociraptor_api import *
 import asyncio
 
 
-mcp = FastMCP("velociraptor-mcp")
+mcp = FastMCP(
+    "velociraptor-mcp",
+    host=os.getenv("FASTMCP_HOST", "0.0.0.0"),
+    port=int(os.getenv("FASTMCP_PORT", "8000"))
+)
 
 # Config path is read from env var; mount the file into the container
 api_client_config = os.getenv("VELOCIRAPTOR_API_CONFIG", "/config/api_client.yaml")
 try:
     init_stub(api_client_config)
-    print(f"[Velociraptor] Stub initialized from {api_client_config}")
+    print(f"[Velociraptor] Stub initialized from {api_client_config}", flush=True)
 except Exception as _e:
     print(f"[Velociraptor] Warning: Could not initialize stub ({_e}). "
-          "Set VELOCIRAPTOR_API_CONFIG and mount the api_client.yaml file.")
+          "Set VELOCIRAPTOR_API_CONFIG and mount the api_client.yaml file.", flush=True)
 
     
 @mcp.tool()
